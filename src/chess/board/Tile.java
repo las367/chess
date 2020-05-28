@@ -11,23 +11,13 @@ public class Tile {
         private boolean isOccupied;
 
         // positions of the tile.
-        private int posX;
-        private int posY;
+        private int pos;
 
         private Piece posHolder;
 
-        public Tile (TileColors tileColor, int posX, int posY) {
+        public Tile (TileColors tileColor, int pos) {
                 this.tileColor = tileColor;
-                this.posX = posX;
-                this.posY = posY;
-        }
-
-        public Tile (TileColors tileColor, boolean isOccupied, int posX, int posY, Piece posHolder) {
-                this.tileColor = tileColor;
-                this.isOccupied = isOccupied;
-                this.posX = posX;
-                this.posY = posY;
-                this.posHolder = posHolder;
+                this.pos = pos;
         }
 
 
@@ -47,4 +37,14 @@ public class Tile {
                 this.posHolder = posHolder;
         }
 
+
+        @Override
+        public String toString() {
+                return "{" +
+                        " tileColor='" + tileColor + "'" +
+                        ", isOccupied='" + getIsOccupied() + "'" +
+                        ", pos='" + pos + "'" +
+                        ", posHolder='" + getPosHolder() + "'" +
+                        "}";
+        }        
 }

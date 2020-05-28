@@ -2,11 +2,14 @@ package chess.engine;
 
 import java.util.Random;
 
+import chess.board.Board;
+
 public class ChessEngine implements IEngine {
 
         Sender out;
         Receiver in;
         ChessStates state;
+        Board gameBoard;
 
         // private object containing ids for each actions!
         private static class ActionIds {
