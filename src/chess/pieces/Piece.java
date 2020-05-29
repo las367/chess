@@ -6,30 +6,20 @@ public class Piece {
         protected PieceColors color;
         protected PieceTypes type;
 
-        protected int posX;
-        protected int posY;
+        protected int pos;
 
-        public Piece (PieceColors color, PieceTypes type, int posX, int posY) {
+        public Piece (PieceColors color, PieceTypes type, int pos) {
                 this.color = color;
                 this.type = type;
-                this.posX = posX;
-                this.posY = posY;
+                this.pos = pos;
         }
         
-        public int getPosX() {
-                return this.posX;
+        public int getPos() {
+                return this.pos;
         }
 
-        public void setPosX(int posX) {
-                this.posX = posX;
-        }
-
-        public int getPosY() {
-                return this.posY;
-        }
-
-        public void setPosY(int posY) {
-                this.posY = posY;
+        public void setPos(int pos) {
+                this.pos = pos;
         }
 
 }

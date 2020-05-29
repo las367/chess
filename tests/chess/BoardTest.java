@@ -6,6 +6,11 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 import chess.board.Board;
+import chess.board.Tile;
+import chess.board.TileColors;
+import chess.pieces.Piece;
+import chess.pieces.PieceColors;
+import chess.pieces.pieceCollections.*;
 
 public class BoardTest {
 
@@ -29,5 +34,19 @@ public class BoardTest {
                 int pos = 12;
 
                 assertArrayEquals("returns postoindex correctly", expectedIndeces, board.posToIndex(pos));
+        }
+
+        @Test 
+        public void boardCreation () {
+
+                board.run();
+
+                int expectedPos = 4;
+
+                // mock data taken from protocol
+                Piece mockPiece = new King( PieceColors.WHITE, expectedPos );
+                Tile expectedTile = new Tile( TileColors.WHITE , expectedPos );
+
+                Tile actual = board.getTile(expectedPos);
         }
 }
