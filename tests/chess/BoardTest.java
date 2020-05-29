@@ -45,8 +45,13 @@ public class BoardTest {
 
                 // mock data taken from protocol
                 Piece mockPiece = new King( PieceColors.WHITE, expectedPos );
-                Tile expectedTile = new Tile( TileColors.WHITE , expectedPos );
+                Tile expectedTile = new Tile( TileColors.BLACK , expectedPos );
+
+                expectedTile.setIsOccupied(true);
+                expectedTile.setPosHolder(mockPiece);
 
                 Tile actual = board.getTile(expectedPos);
+
+                assertEquals("Certain tile from board is equals to board from the protocol", true, expectedTile.equals(actual));
         }
 }

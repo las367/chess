@@ -63,11 +63,11 @@ public class Tile {
 
                 Tile tile = (Tile) obj;
 
-                if ( tile.getIsOccupied() != isOccupied ) return false;
                 if ( tile.getTileColor() != tileColor ) return false;
                 if ( tile.getPos() != pos ) return false;
-
-                if ( tile.getPosHolder().equals( posHolder ) ) return false;
+                
+                if ( tile.getIsOccupied() != isOccupied ) return false;
+                if ( !tile.getPosHolder().equals( posHolder ) ) return false;
 
                 return true;
         }

@@ -1,6 +1,7 @@
 package chess;
 
 import chess.board.Board;
+import chess.board.Tile;
 
 public class app {
         

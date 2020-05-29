@@ -22,4 +22,23 @@ public class Piece {
                 this.pos = pos;
         }
 
+        public PieceColors getColor() {
+                return this.color;
+        }
+
+        public PieceTypes getType() {
+                return this.type;
+        }
+
+        @Override
+        public boolean equals (Object obj) {
+
+                Piece piece = (Piece) obj;
+
+                if ( piece.getType() != type ) return false;
+                if ( piece.getColor() != color ) return false;
+                if ( piece.getPos() != pos ) return false;
+
+                return true;
+        }
 }

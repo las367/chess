@@ -41,6 +41,7 @@ public class Board {
          */
         public int[] posToIndex ( int pos ) {
 
+                // first index => x, second index => y
                 return new int[]{ pos % 8, pos / 8 };
         }
 
@@ -121,10 +122,10 @@ public class Board {
                                 piece = new Bishop(color, position);
                         } else if ( i == 3 ) {
 
-                                piece = new King(color, position);
+                                piece = new Queen(color, position);
                         } else {
 
-                                piece = new Queen(color, position);
+                                piece = new King(color, position);
                         }
 
                         // set a position holder (piece) for each tile.
@@ -165,7 +166,7 @@ public class Board {
 
                 int[] coordinates = posToIndex(pos);
 
-                return gameBoard[ coordinates[0] ][ coordinates[1] ];
+                return gameBoard[ coordinates[1] ][ coordinates[0] ];
         }
 
         public void run () {
