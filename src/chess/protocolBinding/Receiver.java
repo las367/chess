@@ -10,17 +10,17 @@ public interface Receiver {
          */
         String[] read ();
 
-        void readDice () throws IOException;
+        void readDice (int random) throws IOException;
 
-        void readMove () throws IOException;
+        void readMove (int from, int to) throws IOException;
 
-        void readMovePawnRule () throws IOException;
+        void readMovePawnRule (int from, int figureType) throws IOException;
 
-        void readRochade () throws IOException;
+        void readRochade (int from) throws IOException;
 
-        void readEndGame () throws IOException;
+        void readEndGame (int reason) throws IOException;
 
-        void readProposalEnd () throws IOException;
+        void readProposalEnd (int reason) throws IOException;
 
-        void readProposalAnswer () throws IOException;
+        void readProposalAnswer (boolean accept) throws IOException;
 }

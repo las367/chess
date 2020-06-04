@@ -4,12 +4,20 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class StreamBindingReceiver extends Thread implements Receiver  {
+/**
+ * Class for TCP Binding -> would run as a thread an has receiver attribute -> direct access to the engine??
+ * 
+ * TODO: implement outofstateexception on the binding?
+ */
+public class StreamBindingReceiver extends Thread {
 
         private final DataInputStream dis;
+        private final Receiver receiver;
 
-        public StreamBindingReceiver (InputStream is) {
+        public StreamBindingReceiver (InputStream is, Receiver receiver) {
+
                 dis = new DataInputStream(is);
+                this.receiver = receiver;
         }
 
         public void run () {
@@ -47,60 +55,62 @@ public class StreamBindingReceiver extends Thread implements Receiver  {
                                 }
                         } catch ( IOException ex ) {
                                 ex.printStackTrace();
+                                isRunning = false;
                         } catch ( UnknownCommadException ex ) {
+                                System.err.print( ex.getMessage() );
                                 ex.printStackTrace();
+                                isRunning = false;
                         }
                 }
         }
 
-	@Override
 	public String[] read() {
                 // TODO helper method?
 		return null;
 	}
 
-	@Override
 	public void readDice() throws IOException {
                 
                 int random = dis.readInt();
+                receiver.readDice(random);
 	}
 
-	@Override
 	public void readMove() throws IOException {
 
                 int from = dis.readInt();
                 int to = dis.readInt();
+                receiver.readMove(from, to);
 	}
 
-	@Override
 	public void readMovePawnRule() throws IOException {
 
                 int from = dis.readInt();
                 int figureType = dis.readInt();
+                receiver.readMovePawnRule(from, figureType);
 	}
 
-	@Override
 	public void readRochade() throws IOException {
 
                 int from = dis.readInt();
+                receiver.readRochade(from);
 	}
 
-	@Override
 	public void readEndGame() throws IOException {
 
                 int reason = dis.readInt();
+                receiver.readEndGame(reason);
 	}
 
-	@Override
 	public void readProposalEnd() throws IOException {
 
                 int reason = dis.readInt();
+                receiver.readProposalEnd(reason);
 	}
 
-	@Override
 	public void readProposalAnswer() throws IOException {
                 
                 boolean accept = dis.readBoolean();
+                receiver.readProposalAnswer(accept);
 	}
         
 }
