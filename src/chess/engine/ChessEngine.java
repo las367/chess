@@ -3,24 +3,15 @@ package chess.engine;
 import java.util.Random;
 
 import chess.board.Board;
+import chess.protocolBinding.Receiver;
+import chess.protocolBinding.Sender;
 
 public class ChessEngine implements IEngine {
 
         Sender out;
         Receiver in;
         ChessStates state;
-        Board gameBoard;
-
-        // private object containing ids for each actions!
-        private static class ActionIds {
-
-                static int dice = 0;
-                static int move = 1;
-                static int movePawnRule = 2;
-                static int rochade = 3;
-                static int endGame = 4;
-                static int proposalEnd = 5;
-        }          
+        Board gameBoard;       
 
         // intialize in, out and start state here!
         public ChessEngine() {
