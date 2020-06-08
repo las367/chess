@@ -1,15 +1,15 @@
 package chess.engine;
 
+import java.io.IOException;
 import java.util.Random;
 
 import chess.board.Board;
 import chess.protocolBinding.Receiver;
 import chess.protocolBinding.Sender;
 
-public class ChessEngine implements IEngine {
+public class ChessEngine implements IEngine, Receiver{
 
         Sender out;
-        Receiver in;
         ChessStates state;
         Board gameBoard;       
 
@@ -142,4 +142,52 @@ public class ChessEngine implements IEngine {
 	public String sayHelloWorld() {
                 return "Hello World!";
         }
+
+	@Override
+	public String[] read() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void readDice(int random) throws IOException, OutOfStateException {
+		
+		dice();
+	}
+
+	@Override
+	public void readMove(int from, int to) throws IOException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void readMovePawnRule(int from, int figureType) throws IOException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void readRochade(int from) throws IOException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void readEndGame(int reason) throws IOException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void readProposalEnd(int reason) throws IOException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void readProposalAnswer(boolean accept) throws IOException {
+		// TODO Auto-generated method stub
+		
+	}
 }

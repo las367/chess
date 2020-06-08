@@ -4,6 +4,8 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import chess.engine.OutOfStateException;
+
 /**
  * Class for TCP Binding -> would run as a thread an has receiver attribute -> direct access to the engine??
  * 
@@ -53,10 +55,16 @@ public class StreamBindingReceiver extends Thread {
                                                 throw new UnknownCommadException("Unknown command found");
 
                                 }
+                        } catch ( OutOfStateException ex ) {
+
+                                ex.printStackTrace();
+                                isRunning = false;
                         } catch ( IOException ex ) {
+
                                 ex.printStackTrace();
                                 isRunning = false;
                         } catch ( UnknownCommadException ex ) {
+
                                 System.err.print( ex.getMessage() );
                                 ex.printStackTrace();
                                 isRunning = false;
@@ -69,45 +77,45 @@ public class StreamBindingReceiver extends Thread {
 		return null;
 	}
 
-	public void readDice() throws IOException {
+	public void readDice() throws IOException, OutOfStateException {
                 
                 int random = dis.readInt();
                 receiver.readDice(random);
 	}
 
-	public void readMove() throws IOException {
+	public void readMove() throws IOException, OutOfStateException {
 
                 int from = dis.readInt();
                 int to = dis.readInt();
                 receiver.readMove(from, to);
 	}
 
-	public void readMovePawnRule() throws IOException {
+	public void readMovePawnRule() throws IOException, OutOfStateException {
 
                 int from = dis.readInt();
                 int figureType = dis.readInt();
                 receiver.readMovePawnRule(from, figureType);
 	}
 
-	public void readRochade() throws IOException {
+	public void readRochade() throws IOException, OutOfStateException {
 
                 int from = dis.readInt();
                 receiver.readRochade(from);
 	}
 
-	public void readEndGame() throws IOException {
+	public void readEndGame() throws IOException, OutOfStateException {
 
                 int reason = dis.readInt();
                 receiver.readEndGame(reason);
 	}
 
-	public void readProposalEnd() throws IOException {
+	public void readProposalEnd() throws IOException, OutOfStateException {
 
                 int reason = dis.readInt();
                 receiver.readProposalEnd(reason);
 	}
 
-	public void readProposalAnswer() throws IOException {
+	public void readProposalAnswer() throws IOException, OutOfStateException {
                 
                 boolean accept = dis.readBoolean();
                 receiver.readProposalAnswer(accept);
