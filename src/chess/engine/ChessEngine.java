@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Random;
 
 import chess.board.Board;
+import chess.pieces.PieceColors;
 import chess.protocolBinding.Receiver;
 import chess.protocolBinding.Sender;
 
@@ -12,6 +13,11 @@ public class ChessEngine implements IEngine, Receiver{
         Sender out;
         ChessStates state;
         Board gameBoard;       
+        int dice;
+
+        PieceColors playerColor;
+
+        private final String mNotConnected = "Softwares are not yet connected!";
 
         // intialize in, out and start state here!
         public ChessEngine() {
@@ -33,24 +39,43 @@ public class ChessEngine implements IEngine, Receiver{
                 return builder.toString();
         }
 
+        ////////////////
+        ////////////////
+        ////////////////
+        // ENGINE SIDE //
+        ////////////////
+        ////////////////
+        ////////////////
+
         @Override
         public void dice() throws OutOfStateException {
 
-                if ( state != ChessStates.START ) throw new OutOfStateException("Softwares are not yet connected!");
+                if ( state != ChessStates.START ) throw new OutOfStateException(mNotConnected);
 
                 Random random = new Random();
-                int num = random.nextInt(101);       
+                dice = random.nextInt(101);       
 
                 // bigger num -> choose color, smaller -> wait for color.
                 state = ChessStates.WAIT;
+
+                out.sendDice(dice);
         }
 
 	@Override
 	public void chooseColor(boolean white) throws OutOfStateException {
                 
-                if ( state != ChessStates.CHOOSING_COLOR ) throw new OutOfStateException("Softwares are not yet connected!");
+                if ( state != ChessStates.CHOOSING_COLOR ) throw new OutOfStateException(mNotConnected);
+                
+                // if white -> set the player's piece to white AND set state to active
+                if ( white ) {
 
-                state = white ? ChessStates.ACTIVE : ChessStates.PASSIVE;
+                        playerColor = PieceColors.WHITE;
+                        state = ChessStates.ACTIVE;
+                } else {
+
+                        playerColor = PieceColors.BLACK;
+                        state = ChessStates.PASSIVE;
+                }
 	}
 
 	@Override
@@ -143,6 +168,14 @@ public class ChessEngine implements IEngine, Receiver{
                 return "Hello World!";
         }
 
+        ///////////////////
+        ///////////////////
+        ///////////////////
+        // RECEIVER SIDE //
+        ///////////////////
+        ///////////////////
+        ///////////////////
+
 	@Override
 	public String[] read() {
 		// TODO Auto-generated method stub
@@ -152,7 +185,19 @@ public class ChessEngine implements IEngine, Receiver{
 	@Override
 	public void readDice(int random) throws IOException, OutOfStateException {
 		
-		dice();
+                if ( state != ChessStates.WAIT || state != ChessStates.START ) throw new OutOfStateException(mNotConnected);
+                
+                if ( random == dice ) {
+
+                        state = ChessStates.START;
+                        dice();
+                } else chooseColor( dice > random );
+        }
+        
+        @Override
+	public void readChooseColor(boolean white) throws IOException, OutOfStateException {
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Override
@@ -189,5 +234,13 @@ public class ChessEngine implements IEngine, Receiver{
 	public void readProposalAnswer(boolean accept) throws IOException {
 		// TODO Auto-generated method stub
 		
-	}
+        }
+        
+        //////////////
+        //////////////
+        //////////////
+        // GUI SIDE //
+        //////////////
+        //////////////
+        //////////////
 }

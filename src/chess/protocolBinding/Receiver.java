@@ -13,6 +13,8 @@ public interface Receiver {
         String[] read ();
 
         void readDice (int random) throws IOException, OutOfStateException;
+        
+        void readChooseColor (boolean white) throws IOException, OutOfStateException;
 
         void readMove (int from, int to) throws IOException, OutOfStateException;
 

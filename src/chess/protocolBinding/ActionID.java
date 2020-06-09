@@ -8,4 +8,6 @@ public class ActionID {
         static final int ROCHADE = 3;
         static final int END_GAME = 4;
         static final int PROPOSAL_END = 5;
+        static final int CHOOSE_COLOR = 6;
+        static final int PROPOSAL_ANSWER = 7;
 }

@@ -36,6 +36,9 @@ public class StreamBindingReceiver extends Thread {
                                         case ActionID.DICE: 
                                                 readDice();
                                                 break;
+                                        case ActionID.CHOOSE_COLOR:
+                                                readChooseColor();
+                                                break;
                                         case ActionID.MOVE:
                                                 readMove();
                                                 break;
@@ -50,6 +53,9 @@ public class StreamBindingReceiver extends Thread {
                                                 break;
                                         case ActionID.PROPOSAL_END:
                                                 readProposalEnd();
+                                                break;
+                                        case ActionID.PROPOSAL_ANSWER:
+                                                readProposalAnswer();
                                                 break;
                                         default: 
                                                 throw new UnknownCommadException("Unknown command found");
@@ -81,7 +87,13 @@ public class StreamBindingReceiver extends Thread {
                 
                 int random = dis.readInt();
                 receiver.readDice(random);
-	}
+        }
+        
+        public void readChooseColor() throws IOException, OutOfStateException {
+
+                boolean white = dis.readBoolean();
+                receiver.readChooseColor(white);
+        }
 
 	public void readMove() throws IOException, OutOfStateException {
 

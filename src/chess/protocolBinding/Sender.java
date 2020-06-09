@@ -8,6 +8,8 @@ public interface Sender {
 
         void sendDice (int random) throws IOException;
 
+        void sendChooseCholor (boolean white) throws IOException;
+
         void sendMove (int from, int to) throws IOException;
 
         void sendMovePawnRule (int from, int figureType) throws IOException;

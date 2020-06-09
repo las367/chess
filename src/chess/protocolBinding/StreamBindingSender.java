@@ -30,6 +30,13 @@ public class StreamBindingSender implements Sender {
 	}
 
 	@Override
+	public void sendChooseCholor(boolean white) throws IOException {
+		
+		dos.writeInt(ActionID.CHOOSE_COLOR);
+		dos.writeBoolean(white);
+	}
+
+	@Override
 	public void sendMove(int from, int to) throws IOException {
 
                 dos.writeInt(ActionID.MOVE);
@@ -68,7 +75,8 @@ public class StreamBindingSender implements Sender {
 
 	@Override
 	public void sendProposalAnswer(boolean accept) throws IOException {
-                
+		
+		dos.writeInt(ActionID.PROPOSAL_ANSWER);
                 dos.writeBoolean(accept);
 	}
         
