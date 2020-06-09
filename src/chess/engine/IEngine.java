@@ -17,6 +17,14 @@ public interface IEngine {
          */
         void chooseColor (boolean white) throws OutOfStateException;
 
+        // /**
+        //  * Wenn die Zufallszahl, die von der Maschine kleiner als die generierte Zahl anderer Maschine ist,
+        //  * dann wird statt chooseColor diese Methode aufgerufen -> Spieler wählt nicht die Farbe, sondern der Gegner
+        //  * @param white true = white, false = black. true => ACTIVE, false => PASSIVE
+        //  * @throws OutOfStateException
+        //  */
+        // void waitForColor (boolean white) throws OutOfStateException;
+
         /**
          * Setzt die Figur von der Ausgangsposition auf die Zielposition. 
          */

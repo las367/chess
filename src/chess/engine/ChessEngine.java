@@ -58,7 +58,13 @@ public class ChessEngine implements IEngine, Receiver{
                 // bigger num -> choose color, smaller -> wait for color.
                 state = ChessStates.WAIT;
 
-                out.sendDice(dice);
+                try {
+                        out.sendDice(dice);
+                } catch ( IOException ex ) {
+
+                        // TODO: handle errror
+                        ex.printStackTrace();
+                }
         }
 
 	@Override
@@ -71,6 +77,16 @@ public class ChessEngine implements IEngine, Receiver{
 
                         playerColor = PieceColors.WHITE;
                         state = ChessStates.ACTIVE;
+
+                        try {
+                                // player with the bigger color is the one sending the color!
+                                out.sendChooseCholor(false);
+                        } catch ( IOException ex ) {
+        
+                                // TODO: error hendlings
+                                ex.printStackTrace();
+                        }
+
                 } else {
 
                         playerColor = PieceColors.BLACK;
@@ -83,9 +99,18 @@ public class ChessEngine implements IEngine, Receiver{
 
                 if ( state != ChessStates.ACTIVE ) throw new OutOfStateException("Player is not on active state!");
                 
-                // TODO
+                // TODO: Integration with GUI?
 
                 state = ChessStates.PASSIVE;
+
+                try {
+
+                        out.sendMove(from, to);
+                } catch ( IOException ex ) {
+
+                        // TODO: error handling
+                        ex.printStackTrace();
+                }
 	}
 
 	@Override
@@ -95,7 +120,16 @@ public class ChessEngine implements IEngine, Receiver{
                 
                 // TODO
                 
-                state = ChessStates.PASSIVE;	
+                state = ChessStates.PASSIVE;
+                
+                try {
+
+                        out.sendMovePawnRule(from, figureType);
+                } catch ( IOException ex ) {
+
+                        // TODO: error handling
+                        ex.printStackTrace();
+                }
 	}
 
 	@Override
@@ -191,13 +225,23 @@ public class ChessEngine implements IEngine, Receiver{
 
                         state = ChessStates.START;
                         dice();
-                } else chooseColor( dice > random );
+                } else {
+
+                        boolean isBigger = dice > random;
+                        // player with the bigger number gets to choose the color
+                        state = isBigger ? ChessStates.CHOOSING_COLOR : ChessStates.WAIT_FOR_COLOR; 
+                        if ( isBigger ) chooseColor(true);
+                }
         }
         
         @Override
 	public void readChooseColor(boolean white) throws IOException, OutOfStateException {
-		// TODO Auto-generated method stub
-		
+                
+                // Here -> when the player got smaller number than the opponents' -> wait for color provided by the opponent.
+                if ( state != ChessStates.WAIT_FOR_COLOR ) throw new OutOfStateException("Out of State");
+                state = ChessStates.CHOOSING_COLOR;
+
+                chooseColor(white);
 	}
 
 	@Override

@@ -162,6 +162,7 @@ public class Board {
                 }
         }
 
+        // Access for Game Engine here 👇
         public Tile getTile (int pos) {
 
                 int[] coordinates = posToIndex(pos);
