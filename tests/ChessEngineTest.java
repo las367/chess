@@ -9,11 +9,8 @@ public class ChessEngineTest {
         @Test
         public void testHelloWorld() {
 
-
-                ChessEngine engine = null;
-                ShortCut mockSender = new ShortCut(engine);
-
-                engine = new ChessEngine(mockSender);
+                ShortCut mockSender = new ShortCut();
+                ChessEngine engine = new ChessEngine(mockSender);
 
                 String helloWorld = engine.sayHelloWorld();
                 String expected = "Hello World!";

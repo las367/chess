@@ -220,8 +220,9 @@ public class ChessEngine implements IEngine, Receiver, ChessUsage {
 
 	@Override
 	public void readDice(int random) throws IOException, OutOfStateException {
-		
-                if ( state != ChessStates.WAIT || state != ChessStates.START ) throw new OutOfStateException(mNotConnected);
+                
+                if ( state == ChessStates.START ) dice();
+                else if ( state != ChessStates.WAIT ) throw new OutOfStateException(mNotConnected);
                 
                 if ( random == dice ) {
 
@@ -302,5 +303,23 @@ public class ChessEngine implements IEngine, Receiver, ChessUsage {
 	public boolean isActive() {
                 
                 return state == ChessStates.ACTIVE;
-	}
+        }
+        
+        @Override
+        public boolean doDice () {
+
+                try {
+                        dice();
+                        return true;
+                } catch ( OutOfStateException ex ) {
+
+                        return false;
+                }
+        }
+
+        @Override
+        public ChessStates getState () { return state; }
+
+        @Override
+        public PieceColors getColor () { return playerColor; } 
 }

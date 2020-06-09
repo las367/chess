@@ -10,13 +10,11 @@ import chess.protocolBinding.Sender;
 public class ShortCut implements Sender {
 
         // receiver here -> receiver from another client.
-        private final Receiver receiver;
+        private Receiver receiver;
 
-        public ShortCut (Receiver receiver) { 
-
+        public void setReceiver(Receiver receiver) {
                 this.receiver = receiver;
         }
-
 
 	@Override
 	public void write(String message) throws IOException {
