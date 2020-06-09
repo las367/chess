@@ -1,3 +1,4 @@
+import chess.ShortCut;
 import chess.engine.ChessEngine;
 
 import static org.junit.Assert.*;
@@ -8,7 +9,11 @@ public class ChessEngineTest {
         @Test
         public void testHelloWorld() {
 
-                ChessEngine engine = new ChessEngine();
+
+                ChessEngine engine = null;
+                ShortCut mockSender = new ShortCut(engine);
+
+                engine = new ChessEngine(mockSender);
 
                 String helloWorld = engine.sayHelloWorld();
                 String expected = "Hello World!";

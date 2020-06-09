@@ -3,12 +3,13 @@ package chess.engine;
 import java.io.IOException;
 import java.util.Random;
 
+import chess.ChessUsage;
 import chess.board.Board;
 import chess.pieces.PieceColors;
 import chess.protocolBinding.Receiver;
 import chess.protocolBinding.Sender;
 
-public class ChessEngine implements IEngine, Receiver{
+public class ChessEngine implements IEngine, Receiver, ChessUsage {
 
         Sender out;
         ChessStates state;
@@ -20,9 +21,10 @@ public class ChessEngine implements IEngine, Receiver{
         private final String mNotConnected = "Softwares are not yet connected!";
 
         // intialize in, out and start state here!
-        public ChessEngine() {
+        public ChessEngine ( Sender out ) {
 
                 state = ChessStates.START;
+                this.out = out;
         }
 
         // to create strings with data and IDs appended at start.
@@ -287,4 +289,18 @@ public class ChessEngine implements IEngine, Receiver{
         //////////////
         //////////////
         //////////////
+
+        ////////////////
+        ////////////////
+        ////////////////
+        // USAGE SIDE //
+        ////////////////
+        ////////////////
+        ////////////////
+
+        @Override
+	public boolean isActive() {
+                
+                return state == ChessStates.ACTIVE;
+	}
 }
