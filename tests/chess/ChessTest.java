@@ -5,10 +5,11 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import org.junit.Test;
-import org.junit.Assert.*;
 
 import chess.engine.ChessEngine;
 import chess.engine.ChessStates;
+import chess.engine.OutOfStateException;
+import chess.pieces.PieceColors;
 
 public class ChessTest {
 
@@ -42,14 +43,14 @@ public class ChessTest {
         }
 
         @Test
-        public void colorTest () throws Exception {
+        public void diceTestState () throws Exception {
 
                 sender1.setReceiver(game2);
                 sender2.setReceiver(game1);
 
                 ChessUsage activeGame;
                 boolean firstDice = game1.doDice();
-                boolean secondDice = game2.doDice();
+                game2.doDice();
 
                 // if dice is not successful -> fail.
                 // can't seem to do two dices at once..
@@ -60,12 +61,50 @@ public class ChessTest {
                         // assert once again if the game
                         assertEquals( "Game should be active", ChessStates.ACTIVE, activeGame.getState() );
 
-                } else if ( secondDice ) {
+                } else fail();
+        }
 
-                        throw new Exception("first dice");
-                } else {
+        @Test
+        public void colorTest () throws Exception {
 
-                        throw new Exception("Second dice");
+                sender1.setReceiver(game2);
+                sender2.setReceiver(game1);
+
+                game1.doDice();
+                game2.doDice();
+                ChessUsage activeGame = game1.isActive() ? game1 : game2;
+
+                // active game should have white color!
+                assertEquals( "Active game does have white piece color", PieceColors.WHITE, activeGame.getColor() ) ;
+        }
+
+        @Test 
+        public void initBoardTest () {
+
+                sender1.setReceiver(game2);
+                sender2.setReceiver(game1);
+
+                game1.doDice();
+                // game2.doDice();
+
+                try {
+                        game1.doInitBoard();
+                } catch ( OutOfStateException ex ) {
+                        
+                        System.out.print("passed init board test if game is not ready.");
+                }
+
+                game2.doDice();
+
+                try {
+                        game1.doInitBoard();
+                        game2.doInitBoard();
+
+                        
+                } catch ( OutOfStateException ex ) {
+
+                        ex.printStackTrace();
+                        fail();
                 }
         }
 }

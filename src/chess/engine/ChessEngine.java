@@ -13,18 +13,51 @@ public class ChessEngine implements IEngine, Receiver, ChessUsage {
 
         Sender out;
         ChessStates state;
-        Board gameBoard;       
+        Board gameBoard;  
+             
         int dice;
+
+        // to synchronize between two machines -> when machine 1 sent dice but machine 2 haven't even
+        // called dice -> machine 2 would set receivedData to true and then save the dice value into tempInt.
+        int[] tempInt = new int[2];
+        boolean tempBoolean = false;
+        boolean receivedData = false;
+        boolean boardCreated = false; 
 
         PieceColors playerColor;
 
         private final String mNotConnected = "Softwares are not yet connected!";
+        private final String mNotActive = "Player is not on active state!";
 
         // intialize in, out and start state here!
         public ChessEngine ( Sender out ) {
 
                 state = ChessStates.START;
+                gameBoard = new Board();
                 this.out = out;
+        }
+
+        // method to initialize boards and all!
+        private void initBoard () throws OutOfStateException {
+
+                if ( playerColor != null && !boardCreated ) {
+                        gameBoard.run();
+                        boardCreated = true;
+                } else if ( boardCreated ) throw new OutOfStateException("Board is already created!");
+                else throw new OutOfStateException(mNotConnected);
+        }
+
+        // Helper methods to delete the saved value!
+
+        private void flushBoolean () {
+                receivedData = false;
+                tempBoolean = false;
+        }
+
+        private void flushint () {
+                receivedData = false;
+                tempInt[0] = 0;
+                tempInt[1] = 0;
         }
 
         // to create strings with data and IDs appended at start.
@@ -61,7 +94,13 @@ public class ChessEngine implements IEngine, Receiver, ChessUsage {
                 state = ChessStates.WAIT;
 
                 try {
+                        // also: it is possible that engine received dice before it calls the dice method.
+                        // in this case -> guard clause on readDice -> set receivedDice as true
+                        // which means -> wait until dice is called then go back to readDice method -> to figure out
+                        // who starts first.
+                        if ( receivedData ) { readDice(tempInt[0]); }
                         out.sendDice(dice);
+
                 } catch ( IOException ex ) {
 
                         // TODO: handle errror
@@ -98,8 +137,12 @@ public class ChessEngine implements IEngine, Receiver, ChessUsage {
 
 	@Override
 	public void move(int from, int to) throws OutOfStateException {
+                if ( state == ChessStates.PASSIVE ) {
 
-                if ( state != ChessStates.ACTIVE ) throw new OutOfStateException("Player is not on active state!");
+                        // move piece -> opponent side.
+                        
+                        state = ChessStates.ACTIVE;
+                } else if ( state != ChessStates.ACTIVE ) throw new OutOfStateException("Player is not on active state!");
                 
                 // TODO: Integration with GUI?
 
@@ -220,10 +263,22 @@ public class ChessEngine implements IEngine, Receiver, ChessUsage {
 
 	@Override
 	public void readDice(int random) throws IOException, OutOfStateException {
+
+                // so -> this method is going to be called in any case (dice() has been call or not.)
+                // if receivedData is true -> means this is the second time this method is called an there's no need
+                // to initialize oppDice with random (again)
                 
-                if ( state == ChessStates.START ) dice();
+                // guard clause here if dice() hasn't been called yet -> save the value provided and wait until dice() is called, THEN go back to this method.
+                if ( state == ChessStates.START ) {
+                        
+                        if ( !receivedData ) tempInt[0] = random;
+                        receivedData = true;
+                        return;
+                }
                 else if ( state != ChessStates.WAIT ) throw new OutOfStateException(mNotConnected);
                 
+                // if passed the guard clause -> flush the storage.
+                if ( receivedData ) flushint();
                 if ( random == dice ) {
 
                         state = ChessStates.START;
@@ -234,51 +289,63 @@ public class ChessEngine implements IEngine, Receiver, ChessUsage {
                         // player with the bigger number gets to choose the color
                         state = isBigger ? ChessStates.CHOOSING_COLOR : ChessStates.WAIT_FOR_COLOR; 
                         if ( isBigger ) chooseColor(true);
+                        else {
+                                if ( receivedData ) { readChooseColor(tempBoolean); }
+                        }
                 }
         }
         
         @Override
 	public void readChooseColor(boolean white) throws IOException, OutOfStateException {
                 
+                if ( state == ChessStates.WAIT ) {
+
+                        receivedData = true;
+                        tempBoolean = white;
+                        return;
+                }
                 // Here -> when the player got smaller number than the opponents' -> wait for color provided by the opponent.
-                if ( state != ChessStates.WAIT_FOR_COLOR ) throw new OutOfStateException("Out of State");
+                else if ( state != ChessStates.WAIT_FOR_COLOR ) throw new OutOfStateException("Out of State");
+
+                if ( receivedData ) flushBoolean();
                 state = ChessStates.CHOOSING_COLOR;
 
                 chooseColor(white);
 	}
 
 	@Override
-	public void readMove(int from, int to) throws IOException {
+	public void readMove(int from, int to) throws IOException, OutOfStateException {
+                
+                if ( state != ChessStates.PASSIVE ) throw new OutOfStateException(mNotActive);
+                move(from, to);
+	}
+
+	@Override
+	public void readMovePawnRule(int from, int figureType) throws IOException, OutOfStateException {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void readMovePawnRule(int from, int figureType) throws IOException {
+	public void readRochade(int from) throws IOException, OutOfStateException {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void readRochade(int from) throws IOException {
+	public void readEndGame(int reason) throws IOException, OutOfStateException {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void readEndGame(int reason) throws IOException {
+	public void readProposalEnd(int reason) throws IOException, OutOfStateException {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void readProposalEnd(int reason) throws IOException {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void readProposalAnswer(boolean accept) throws IOException {
+	public void readProposalAnswer(boolean accept) throws IOException, OutOfStateException {
 		// TODO Auto-generated method stub
 		
         }
@@ -322,4 +389,16 @@ public class ChessEngine implements IEngine, Receiver, ChessUsage {
 
         @Override
         public PieceColors getColor () { return playerColor; } 
+
+        @Override
+        public void doPrintField () {
+
+                gameBoard.printBoard();
+        }
+
+        @Override
+        public void doInitBoard() throws OutOfStateException {
+
+                initBoard();
+        }
 }

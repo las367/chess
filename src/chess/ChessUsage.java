@@ -1,6 +1,7 @@
 package chess;
 
 import chess.engine.ChessStates;
+import chess.engine.OutOfStateException;
 import chess.pieces.PieceColors;
 
 public interface ChessUsage {
@@ -13,4 +14,8 @@ public interface ChessUsage {
         ChessStates getState ();
 
         PieceColors getColor ();
+
+        void doPrintField ();
+
+        void doInitBoard() throws OutOfStateException;
 }
