@@ -11,6 +11,8 @@ public interface ChessUsage {
         // calls the method dice() in the Engine -> returns true if successful
         boolean doDice ();
 
+        boolean doDiceDebug (int dice);
+
         ChessStates getState ();
 
         PieceColors getColor ();

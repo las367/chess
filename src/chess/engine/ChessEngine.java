@@ -17,11 +17,20 @@ public class ChessEngine implements IEngine, Receiver, ChessUsage {
              
         int dice;
 
+        boolean debug = false;
+        int debugDice = 0;
+
         // to synchronize between two machines -> when machine 1 sent dice but machine 2 haven't even
         // called dice -> machine 2 would set receivedData to true and then save the dice value into tempInt.
+
+        // two separate conditions on received data -> conflict on flushing the storage -> if received data int 
+        // needs to be stored but at the same time boolean storage need to be flushed -> conflict occured -> int storage is going
+        // to be regardless flushed.
         int[] tempInt = new int[2];
         boolean tempBoolean = false;
-        boolean receivedData = false;
+        boolean receivedDataInt = false;
+        boolean receivedDataBool = false;
+
         boolean boardCreated = false; 
 
         PieceColors playerColor;
@@ -50,12 +59,12 @@ public class ChessEngine implements IEngine, Receiver, ChessUsage {
         // Helper methods to delete the saved value!
 
         private void flushBoolean () {
-                receivedData = false;
+                receivedDataBool = false;
                 tempBoolean = false;
         }
 
         private void flushint () {
-                receivedData = false;
+                receivedDataInt = false;
                 tempInt[0] = 0;
                 tempInt[1] = 0;
         }
@@ -88,7 +97,7 @@ public class ChessEngine implements IEngine, Receiver, ChessUsage {
                 if ( state != ChessStates.START ) throw new OutOfStateException(mNotConnected);
 
                 Random random = new Random();
-                dice = random.nextInt(101);       
+                dice = debug ? debugDice :  random.nextInt(101);       
 
                 // bigger num -> choose color, smaller -> wait for color.
                 state = ChessStates.WAIT;
@@ -98,7 +107,8 @@ public class ChessEngine implements IEngine, Receiver, ChessUsage {
                         // in this case -> guard clause on readDice -> set receivedDice as true
                         // which means -> wait until dice is called then go back to readDice method -> to figure out
                         // who starts first.
-                        if ( receivedData ) { readDice(tempInt[0]); }
+                        if ( receivedDataInt ) { readDice(tempInt[0]); }
+
                         out.sendDice(dice);
 
                 } catch ( IOException ex ) {
@@ -264,6 +274,8 @@ public class ChessEngine implements IEngine, Receiver, ChessUsage {
 	@Override
 	public void readDice(int random) throws IOException, OutOfStateException {
 
+                // read dice?
+
                 // so -> this method is going to be called in any case (dice() has been call or not.)
                 // if receivedData is true -> means this is the second time this method is called an there's no need
                 // to initialize oppDice with random (again)
@@ -271,14 +283,14 @@ public class ChessEngine implements IEngine, Receiver, ChessUsage {
                 // guard clause here if dice() hasn't been called yet -> save the value provided and wait until dice() is called, THEN go back to this method.
                 if ( state == ChessStates.START ) {
                         
-                        if ( !receivedData ) tempInt[0] = random;
-                        receivedData = true;
+                        if ( !receivedDataInt ) tempInt[0] = random;
+                        receivedDataInt = true;
                         return;
                 }
                 else if ( state != ChessStates.WAIT ) throw new OutOfStateException(mNotConnected);
                 
                 // if passed the guard clause -> flush the storage.
-                if ( receivedData ) flushint();
+                if ( receivedDataInt ) flushint();
                 if ( random == dice ) {
 
                         state = ChessStates.START;
@@ -290,7 +302,7 @@ public class ChessEngine implements IEngine, Receiver, ChessUsage {
                         state = isBigger ? ChessStates.CHOOSING_COLOR : ChessStates.WAIT_FOR_COLOR; 
                         if ( isBigger ) chooseColor(true);
                         else {
-                                if ( receivedData ) { readChooseColor(tempBoolean); }
+                                if ( receivedDataBool ) { readChooseColor(tempBoolean); }
                         }
                 }
         }
@@ -300,14 +312,14 @@ public class ChessEngine implements IEngine, Receiver, ChessUsage {
                 
                 if ( state == ChessStates.WAIT ) {
 
-                        receivedData = true;
+                        receivedDataBool = true;
                         tempBoolean = white;
                         return;
                 }
                 // Here -> when the player got smaller number than the opponents' -> wait for color provided by the opponent.
                 else if ( state != ChessStates.WAIT_FOR_COLOR ) throw new OutOfStateException("Out of State");
 
-                if ( receivedData ) flushBoolean();
+                if ( receivedDataBool ) flushBoolean();
                 state = ChessStates.CHOOSING_COLOR;
 
                 chooseColor(white);
@@ -382,6 +394,14 @@ public class ChessEngine implements IEngine, Receiver, ChessUsage {
 
                         return false;
                 }
+        }
+
+        @Override 
+        public boolean doDiceDebug (int dice) {
+
+                debug = true;
+                debugDice = dice;
+                return doDice();
         }
 
         @Override

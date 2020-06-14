@@ -70,8 +70,8 @@ public class ChessTest {
                 sender1.setReceiver(game2);
                 sender2.setReceiver(game1);
 
-                game1.doDice();
-                game2.doDice();
+                game1.doDiceDebug(1);
+                game2.doDiceDebug(2);
                 ChessUsage activeGame = game1.isActive() ? game1 : game2;
 
                 // active game should have white color!
@@ -84,7 +84,7 @@ public class ChessTest {
                 sender1.setReceiver(game2);
                 sender2.setReceiver(game1);
 
-                game1.doDice();
+                game1.doDiceDebug(1);
                 // game2.doDice();
 
                 try {
@@ -94,7 +94,7 @@ public class ChessTest {
                         System.out.print("passed init board test if game is not ready.");
                 }
 
-                game2.doDice();
+                game2.doDiceDebug(2);
 
                 try {
                         game1.doInitBoard();
